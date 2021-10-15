@@ -1,0 +1,65 @@
+<style>
+  .prioInputs {
+    width: 50px;
+  }
+</style>
+<div class="container-fluid">
+  <h2 class="mt-4 font-weight-light">Fragen beantworten</h2>
+  <hr class="my-3">
+
+  <div class="row">
+    <div class="col-6">
+      <div *ngIf="selectedSubject != null" id="subject" class="dropdown ml-3">
+        <button class="btn btn-outline-secondary dropdown-toggle w-75" type="button" id="subjectDropdown"
+          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {{selectedSubject.description}}
+        </button>
+        <div class="dropdown-menu w-75" aria-labelledby="subjectDropdown">
+          <button *ngFor="let subject of subjects" class="dropdown-item" type="button"
+            (click)="subjectChanged(subject)">{{subject.description}}</button>
+        </div>
+      </div>
+    </div>
+    <div class="col-6">
+      <jqxComboBox class="w-75" #subjectAreaComboBox [height]="38"
+        [source]="subjectAreaForDropdown" [selectedIndex]="0" (onChange)="subjectAreaValueChange()">
+      </jqxComboBox>
+    </div>
+  </div>
+  <div class="mt-4 ml-3">
+      <span>Fragen aus Priorisierung&nbsp;&nbsp;</span>
+      <input class="prioInputs" type="number" [(ngModel)]="prioFrom"/>
+      <span>&nbsp;&nbsp;bis&nbsp;&nbsp;</span>
+      <input class="prioInputs" type="number" [ngModel]="prioTo"/><span>&nbsp;&nbsp;</span>
+  </div>
+  <div class="mt-3 ml-3">
+    <button class="btn btn-outline-success" (click)="getQuestionToAnswer()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg text-success" viewBox="0 0 16 16">
+        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
+      </svg>
+      Starten!
+    </button>
+  </div>
+  <div *ngIf="questionToAnswer != null" class="mt-5 card bg-light">
+    <div class="card-header text-center"><span class="h5">{{questionToAnswer[0].question}}</span></div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-1">
+          <a (click)="getLastAnsweredQuestion()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
+              <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+            </svg>
+          </a>
+        </div>
+        <div class="col-10"></div>
+        <div class="col-1">
+          <a (click)="getQuestionToAnswer()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-caret-right" viewBox="0 0 16 16">
+              <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

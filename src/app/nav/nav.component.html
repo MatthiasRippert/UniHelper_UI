@@ -1,0 +1,58 @@
+<ng-container *ngIf="true">
+  <nav class="navbar navbar-expand-lg navbar-expand-md navbar-light bg-light">
+    <a class="navbar-brand" href="#">Uni Helper</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigaton">
+      <span class="navbar-toggle-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav">
+        <ng-container *ngFor="let navItem of navigation">
+          <ng-container *ngIf="navItem.routerLink != null">
+            <li class="nav-item">
+              <a class="nav-link dropdown-toggle mx-3" href="/#{{navItem.routerLink}}">{{navItem.descNavItem}}</a>
+            </li>
+          </ng-container>
+          <ng-container *ngIf="navItem.routerLink == null && navItem.hasDropdown">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="test" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{navItem.description}}
+              </a>
+              <div class="dropdown-menu" aria-labelledby="test">
+                <ng-container *ngFor="let navDropdownItem of navItem.dropdownItems">
+                  <a class="dropdown-item" href="/#{{navDropdownItem.routerLink}}">{{navDropdownItem.description}}</a>
+                </ng-container>
+              </div>
+            </li>
+          </ng-container>
+        </ng-container>
+      </ul>
+    </div>
+  </nav>
+</ng-container>
+<ng-container *ngIf="false">
+  <div class="flex-shrink-0 p-3 bg-white fixed-left">
+    <a href="#" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
+      <span class="fs-5 fw-semibold">UniHelper</span>
+    </a>
+    <ul class="list-unstyled ps-0">
+      <li *ngFor="let navItem of navigation" class="mb-1">
+        <ng-container *ngIf="navItem.routerLink != null">
+          <a class="link-dark rounded" href="/#{{navItem.routerLink}}">{{navItem.descNavItem}}</a>
+        </ng-container>
+        <ng-container *ngIf="navItem.routerLink == null && navItem.hasDropdown">
+          <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse"
+            data-bs-target="#nav-collapse" aria-expanded="true">
+            {{navItem.descNavItem}}
+          </button>
+          <div class="collapse show" id="nav-collapse">
+            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+              <li *ngFor="let navDropdownItem of navItem.dropdownItems">
+                <a class="link-dark rounded" href="/#{{navDropdownItem.routerLink}}">{{navDropdownItem.description}}</a>
+              </li>
+            </ul>
+          </div>
+        </ng-container>
+      </li>
+    </ul>
+  </div>
+</ng-container>

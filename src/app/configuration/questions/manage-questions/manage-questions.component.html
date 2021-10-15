@@ -1,0 +1,95 @@
+<div class="container-fluid">
+  <h2 class="mt-4 font-weight-light">Fragen verwalten</h2>
+  <hr class="my-3">
+  <div class="row">
+    <div class="col-3">
+      <div class="input-group">
+        <div class="form-outline w-75">
+          <input type="search" id="form1" class="form-control" (input)="getQuestionBySearchText()" [(ngModel)]="questionSearchText"/>
+        </div>
+      </div>
+    </div>
+    <div class="col-3">
+      <div *ngIf="selectedSubject != null" id="subject" class="dropdown">
+        <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" id="subjectDropdown"
+          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {{selectedSubject.description}}
+        </button>
+        <div class="dropdown-menu w-100" aria-labelledby="subjectDropdown">
+          <button *ngFor="let subject of subjects" class="dropdown-item" type="button"
+            (click)="subjectChanged(subject)">{{subject.description}}</button>
+        </div>
+      </div>
+    </div>
+    <div class="col-3">
+      <jqxComboBox class="w-100" #subjectAreaComboBox [height]="38"
+        [source]="subjectAreaForDropdown" [selectedIndex]="0" (onChange)="subjectAreaValueChange($event)">
+      </jqxComboBox>
+    </div>
+    <div class="col-3">
+      <a href="#/configuration/manageQuestions/createOrEditQuestion" class="float-right btn btn-outline-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg text-success" viewBox="0 0 16 16">
+          <path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2H9v6a1 1 0 1 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z" />
+        </svg>
+        &nbsp;Frage hinzufügen
+      </a>
+    </div>
+  </div>
+  <div>
+  <div class="mt-4 alert alert-danger" role="alert" *ngIf="showDeleteQuestionAlert">
+    <span>Soll die Frage <strong>{{questionToDelete.question}}</strong> wirklich gelöscht werden?</span>
+    <br>
+    <div class="btn-group mt-3">
+      <button type="button" class="mr-5 btn btn-success" (click)="deleteQuestion()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+          <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" fill="#000" />
+        </svg>
+      </button>
+      <button type="button" class="btn btn-danger" (click)="closeDeleteQuestionAlert()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z" fill="#000" />
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z" fill="#000" />
+        </svg>
+      </button>
+    </div>
+  </div>
+    <div class="row mt-4">
+      <ul class="list-group w-100">
+        <li *ngFor="let question of questions" class="list-group-item">
+          <ng-container class="row">
+            <ng-container class="col-10">
+              <span class="h4">{{question.question}}</span>
+            </ng-container>
+            <ng-container class="col-2">
+              <button type="button" class="float-right mr-2 btn btn-outline-primary" (click)="questionClicked(question)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil"
+                  viewBox="0 0 16 16">
+                  <path
+                    d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
+                </svg>
+              </button>
+            </ng-container>
+          </ng-container>
+          <br>
+          <span class="h5">{{question.subject}}</span>
+          <br>
+          <ng-container class="row">
+            <ng-container class="col-10">
+              <span class="h6">Themenbereich: {{question.subjectArea}}</span>
+            </ng-container>
+            <ng-container class="col-2">
+              <button type="button" class="float-right mr-2 btn btn-outline-danger" (click)="showDeleteQuestionAlertClick(question)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                  <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                </svg>
+              </button>
+            </ng-container>
+          </ng-container>
+          <br>
+          <span>Erstellt: {{question.createdAt | date: 'dd.MM.yyyy'}}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
