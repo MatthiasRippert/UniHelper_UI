@@ -6,27 +6,11 @@ import { request } from "http";
 import { jqxComboBoxComponent } from "jqwidgets-ng/jqxcombobox";
 import { combineLatest, defer, forkJoin, from, Observable, of, throwError } from "rxjs";
 import { catchError, debounceTime, distinctUntilChanged, filter, map, mergeMap, tap } from "rxjs/operators";
+import { IQuestion, ISubject, ISubjectArea } from "src/app/interfaces/interfaces";
 import { CommonRequestService } from "src/app/shared/common-request.service";
 import { ShowImageInFullScreenComponent } from "src/app/shared/show-image-in-full-screen/show-image-in-full-screen.component";
 import { ManageQuestionsService } from "./shared/manage-questions.service";
 
-export interface ISubject{
-  idSubject: number,
-  description: string,
-  vocabulary: boolean
-}
-export interface IQuestion{
-  idQuestion: number,
-  prio: number,
-  idSubject: number,
-  subject: string,
-  idSubjectArea: number,
-  subjectArea: string,
-  question: string,
-  questionImage: string,
-  idQuestionType: number,
-  createdAt: Date
-}
 @Component({
   selector: 'configuration-manage-questions',
   templateUrl: './manage-questions.component.html'
@@ -35,19 +19,22 @@ export interface IQuestion{
 export class ConfigurationManageQuestionsComponent implements OnInit{
   @ViewChild('subjectAreaComboBox') subjectAreaComboBox: jqxComboBoxComponent;
   @ViewChild('showImageComponent') showImageComponent: ShowImageInFullScreenComponent;
-  public selectedSubject: any;
-  public subjects: ISubject[] = [];
-  public questions$ = new Observable<IQuestion[]>();
+  selectedSubject: any;
+  subjects: ISubject[] = [];
+  questions$ = new Observable<IQuestion[]>();
 
-  public questionSearchText: string = '';
+  private questions: string[] = [];
+  filteredQuestions: string[] = [];
 
-  subjectAreas: any[];
-  private selectedSubjectArea: string;
+  questionSearchText: string = '';
 
-  public showDeleteQuestionAlert: boolean;
-  public questionToDelete: any;
+  subjectAreas: ISubjectArea[];
+  selectedSubjectAreas: ISubjectArea[] = [];
 
-  public questionsLoading: boolean = true;
+  showDeleteQuestionAlert: boolean;
+  questionToDelete: any;
+
+  questionsLoading = true;
 
   private searchTextChanged = new EventEmitter();
 
@@ -69,7 +56,7 @@ export class ConfigurationManageQuestionsComponent implements OnInit{
       distinctUntilChanged(),
       tap(text => {
         this.questionSearchText = text;
-        this.getQuestions(text);
+        this.getQuestions();
       })
     ).subscribe();
   }
@@ -95,7 +82,7 @@ export class ConfigurationManageQuestionsComponent implements OnInit{
   private getSubjectAreas(){
     this.commonRequestService.getSubjectAreas(this.selectedSubject.idSubject).subscribe(areas => {
       this.subjectAreas = areas;
-      this.getQuestions(this.questionSearchText)
+      this.getQuestions()
     })
   }
 
@@ -103,15 +90,14 @@ export class ConfigurationManageQuestionsComponent implements OnInit{
     this.selectedSubject = subject;
     this.getSubjectAreas();
   }
-  private getQuestions(searchText: string){
+  getQuestions(){
     this.questionsLoading = true;
-    var idSubjectArea = this.getSelectedSubjectAreaId();
-    let getQuestionRequest$ = this.questionService.getQuestions(this.selectedSubject.idSubject, idSubjectArea);
-    if(searchText != null && searchText != ''){
-      getQuestionRequest$ = this.questionService.getQuestionsByText(this.selectedSubject.idSubject, this.questionSearchText, idSubjectArea);
-    }
+    const idsSubjectArea = this.selectedSubjectAreas.map(m => m.idSubjectArea);;
+    let getQuestionRequest$ = this.questionService.getQuestions(this.selectedSubject.idSubject, idsSubjectArea, this.questionSearchText);
     this.questions$ = getQuestionRequest$.pipe(
       mergeMap(questions => {
+        this.questions = questions.map(m => m.question);
+        this.filteredQuestions = this.questions;
         if(questions.filter(f => f.questionImage != null && f.questionImage != '').length > 0){
           return this.getImageUrls(questions).pipe(map(urls => {
             return {questions, urls};
@@ -170,22 +156,8 @@ export class ConfigurationManageQuestionsComponent implements OnInit{
     return '';
   }
 
-  private getSelectedSubjectAreaId(){
-    let idSubjectArea: number = 0;
-    if(this.selectedSubjectArea != 'Alle Themenbereiche'){
-      if(this.selectedSubjectArea != null && this.selectedSubject.idSubject != 0){
-        idSubjectArea = this.subjectAreas.find(f => f.idSubject == this.selectedSubject.idSubject && f.description == this.selectedSubjectArea).idSubjectArea;
-      }
-      else if(this.selectedSubjectArea != null){
-        idSubjectArea = this.subjectAreas.find(f => f.description == this.selectedSubjectArea).idSubjectArea;
-      }
-    }
-    return idSubjectArea;
-  }
-
   public subjectAreaValueChange(subjectArea: any){
-    this.selectedSubjectArea = this.subjectAreaComboBox.getSelectedItem().value;
-    this.getQuestions(this.questionSearchText);
+    this.getQuestions();
   }
   public questionClicked(question: any){
     var queryParams = {
@@ -202,7 +174,7 @@ export class ConfigurationManageQuestionsComponent implements OnInit{
 
   public deleteQuestion(){
     this.questionService.deleteQuestion(this.questionToDelete.idQuestion).subscribe(() => {
-      this.getQuestions(this.questionSearchText);
+      this.getQuestions();
       this.closeDeleteQuestionAlert();
     })
   }
@@ -217,6 +189,11 @@ export class ConfigurationManageQuestionsComponent implements OnInit{
 
   public onSearchTextChanged(text: any){
     this.searchTextChanged.emit(text);
+  }
+
+  public filterQuestions(event: any): void {
+    this.filteredQuestions = this.questions.filter(question => question.toLowerCase().includes(event.query.toLowerCase()));
+    console.log(this.filteredQuestions);
   }
 
 }

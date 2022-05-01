@@ -5,6 +5,7 @@ import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { JwtModule } from '@auth0/angular-jwt';
 import { AnswerQuestionModule } from './answer-question/answer-question.module';
 
@@ -34,6 +35,7 @@ export function tokenGetter(){
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     HttpClientModule,
     CommonModule,
     AppRoutingModule,

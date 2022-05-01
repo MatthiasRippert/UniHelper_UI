@@ -81,3 +81,16 @@ html, body{
   background-color: green;
 }
 
+input[type=search]::-webkit-search-cancel-button {
+  -webkit-appearance: searchfield-cancel-button;
+}
+
+.filterItem {
+  display: flex;
+  align-items: center;
+}
+
+.prioInputs {
+  width: 25% !important;
+  flex: 0 0 auto !important;
+}

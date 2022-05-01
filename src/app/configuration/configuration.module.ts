@@ -22,6 +22,10 @@ import { AngularFireStorageModule } from "@angular/fire/compat/storage"
 import { AngularFireModule } from "@angular/fire/compat"
 import { AuthGuard } from "../guards/auth-guard.service";
 import { SharedModule } from "../shared/shared.module";
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { DropdownModule } from 'primeng/dropdown';
+import { MultiSelectModule } from 'primeng/multiselect';
+
 @NgModule({
   imports: [
     ConfigurationRoutingModule,
@@ -31,7 +35,10 @@ import { SharedModule } from "../shared/shared.module";
     RouterModule,
     AnswerVocabularyModule,
     AngularFireStorageModule,
-    SharedModule
+    SharedModule,
+    AutoCompleteModule,
+    DropdownModule,
+    MultiSelectModule
   ],
   declarations: [
     ConfigurationManageQuestionsComponent,

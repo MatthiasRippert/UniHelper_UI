@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { ISubject } from "../configuration/questions/manage-questions/manage-questions.component";
+import { ISubject } from "../interfaces/interfaces";
 import { Values } from "./values";
 
 @Injectable()

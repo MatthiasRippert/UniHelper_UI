@@ -29,7 +29,7 @@
     <div class="col-6 text-right">
       <button type="button" class="btn btn-outline-primary page-header-button"
         (click)="saveQuestion()"
-        [disabled]="selectedSubject == null || selectedSubjectArea == '' || (answers.length == 0 || answers[0].answer == '') || (selectedQuestionType == 'multipleChoice' && this.multipleChoiceRightAnswer == 0)">
+        [disabled]="selectedSubject == null || selectedSubjectArea == null || (answers.length == 0 || answers[0].answer == '') || (selectedQuestionType == 'multipleChoice' && this.multipleChoiceRightAnswer == 0)">
         <i class="bi bi-save text-success" width="16" height="16"></i>
         <div *ngIf="saveQuestionLoading" class="loader-sm"></div>
         <span *ngIf="!smallScreen">&nbsp;Frage speichern</span>
@@ -44,27 +44,29 @@
         <span>Erfolgreich gespeichert!</span>
       </div>
       <div *ngIf="subjects != null">
-        <div class="form-group">
-          <label for="subject">Fach</label>
-          <div id="subject" class="dropdown">
-            <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" id="subjectDropdown"
-              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              {{selectedSubject.description}}
-            </button>
-            <div class="dropdown-menu w-100" aria-labelledby="subjectDropdown">
-              <button *ngFor="let subject of subjects" class="dropdown-item" type="button"
-                (click)="subjectChanged(subject)">{{subject.description}}</button>
-            </div>
-          </div>
+        <div class="form-group form-row filterItem">
+          <label for="subject" class="col-4 col-md-2">Fach</label>
+          <p-dropdown class="col-8 col-md-10" styleClass="w-100" [options]="subjects" [(ngModel)]="selectedSubject" (onChange)="subjectChanged($event.value)">
+            <ng-template let-subject pTemplate="selectedItem">
+              <div>{{subject.description}}</div>
+            </ng-template>
+            <ng-template let-subject pTemplate="item">
+              <div>{{subject.description}}</div>
+            </ng-template>
+          </p-dropdown>
         </div>
-        <div class="form-group" *ngIf="suggestedQuestionsExist != null">
-          <label for="subjectArea">Themenbereich</label>
-          <input list="subjectAreas" class="datalist" [(ngModel)]="selectedSubjectArea">
-          <datalist id="subjectAreas">
-            <ng-container *ngFor="let subject of subjectAreaForDropdown">
-              <option value="{{subject}}"></option>
-            </ng-container>
-          </datalist>
+        <div class="form-group form-row filterItem" *ngIf="suggestedQuestionsExist != null">
+          <label for="subjectArea" class="col-4 col-md-2">Themenbereich</label>
+          <p-dropdown class="col-8 col-md-10" styleClass="w-100" [options]="subjectAreas" [(ngModel)]="selectedSubjectArea" [filter]="true" filterBy="descriptionSubjectArea">
+            <ng-template pTemplate="selectedItem">
+              <div *ngIf="selectedSubjectArea">
+                <div>{{selectedSubjectArea.descriptionSubjectArea}}</div>
+              </div>
+            </ng-template>
+            <ng-template let-subjectArea pTemplate="item">
+              <div>{{subjectArea.descriptionSubjectArea}}</div>
+            </ng-template>
+          </p-dropdown>
         </div>
         <div class="form-group">
           <label for="prio" class="form-label">Priorisierung</label>
@@ -75,8 +77,8 @@
         </div>
         <div class="form-group">
           <label for="question">Frage</label>
-          <input type="text" class="form-control" id="question" aria-describedby="question" placeholder="Frage..."
-            [(ngModel)]="question" />
+          <input type="search" class="form-control" id="question" aria-describedby="question" placeholder="Frage..."
+            [(ngModel)]="question" [autocomplete]="false"/>
         </div>
         <div class="custom-file">
           <input type="file" class="custom-file-input" id="questionImage" (change)="onQuestionImageChange($event)" accept="*.png.jpg"/>
@@ -213,14 +215,10 @@
             <span class="h6">Themenbereich: {{note.descSubjectArea}}</span>
           </div>
           <div *ngIf="!isNoteOpened(note.idNote)" class="col-2 d-flex justify-content-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
-              <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
-            </svg>
+            <i class="bi bi-chevron-right" width="45" height="45"></i>
           </div>
           <div *ngIf="isNoteOpened(note.idNote)" class="col-2 d-flex justify-content-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
-              <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
-            </svg>
+            <i class="bi bi-chevron-down" width="45" height="45"></i>
           </div>
         </div>
         <ul *ngIf="isNoteOpened(note.idNote)" class="list-group">

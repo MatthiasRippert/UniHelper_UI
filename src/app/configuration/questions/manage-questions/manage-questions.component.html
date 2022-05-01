@@ -14,33 +14,25 @@
   </div>
   <hr class="page-header-divider">
   <div class="row">
-    <div class="col-12 col-md-3">
-      <div class="input-group">
-        <div class="form-outline w-75">
-          <input type="search" id="form1" class="form-control" (input)="onSearchTextChanged($event.target.value)" [(ngModel)]="questionSearchText"/>
-        </div>
-      </div>
-    </div>
-    <div class="col-12 my-2 col-md-3">
-      <div *ngIf="selectedSubject != null" id="subject" class="dropdown">
-        <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" id="subjectDropdown"
-          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          {{selectedSubject.description}}
-        </button>
-        <div class="dropdown-menu w-100" aria-labelledby="subjectDropdown">
-          <button *ngFor="let subject of subjects" class="dropdown-item" type="button"
-            (click)="subjectChanged(subject)">{{subject.description}}</button>
-        </div>
-      </div>
-    </div>
-    <div class="col-12 col-md-3">
-      <input list="subjectAreas" class="datalist">
-      <datalist id="subjectAreas">
-        <ng-container *ngFor="let area of subjectAreas">
-          <option value="{{area.descriptionSubjectArea}}"></option>
-        </ng-container>
-      </datalist>
-    </div>
+    <p-autoComplete class="col-12 col-md-3" styleClass="w-100" [(ngModel)]="questionSearchText" [showEmptyMessage]="true" [suggestions]="filteredQuestions" (completeMethod)="filterQuestions($event)" (onSelect)="getQuestions()" (keyup.enter)="getQuestions()">
+      <ng-template let-question pTemplate="item">
+        <div>{{question}}</div>
+      </ng-template>
+    </p-autoComplete>
+    <p-dropdown class="col-12 col-md-3 my-2 my-md-0" styleClass="w-100" [options]="subjects" [(ngModel)]="selectedSubject" (onChange)="subjectChanged($event.value)">
+      <ng-template let-subject pTemplate="selectedItem">
+        <div>{{subject.description}}</div>
+      </ng-template>
+      <ng-template let-subject pTemplate="item">
+        <div>{{subject.description}}</div>
+      </ng-template>
+    </p-dropdown>
+    <p-multiSelect class="col-12 col-md-3" styleClass="w-100" display="chip" [options]="subjectAreas" [(ngModel)]="selectedSubjectAreas"
+      (onChange)="getQuestions()" optionLabel="descriptionSubjectArea" defaultLabel="Themenbereiche auswählen">
+      <ng-template let-subjectArea pTemplate="item">
+        <div>{{subjectArea.descriptionSubjectArea}}</div>
+      </ng-template>
+    </p-multiSelect>
     <div *ngIf="!smallScreen" class="col-3">
       <a href="#/configuration/manageQuestions/createOrEditQuestion" class="float-right btn btn-outline-primary">
         <i class="bi bi-plus-lg text-success" width="16" height="16"></i>

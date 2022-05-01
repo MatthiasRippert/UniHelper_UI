@@ -4,6 +4,7 @@ import { ActivatedRoute } from "@angular/router";
 import { jqxComboBoxComponent } from "jqwidgets-ng/jqxcombobox";
 import { Observable, of, interval, Subscriber, Subscription, forkJoin } from "rxjs";
 import { delay, map, mergeMap, tap } from "rxjs/operators";
+import { ISubject, ISubjectArea } from "../interfaces/interfaces";
 import { ShowImageInFullScreenComponent } from "../shared/show-image-in-full-screen/show-image-in-full-screen.component";
 import { AnswerQuestionService } from "./shared/answer-question.service";
 
@@ -15,55 +16,54 @@ import { AnswerQuestionService } from "./shared/answer-question.service";
 export class AnswerQuestionComponent implements OnInit{
   @ViewChild('subjectAreaComboBox') subjectAreaComboBox: jqxComboBoxComponent;
   @ViewChild('showImageComponent') showImageComponent: ShowImageInFullScreenComponent;
-  public subjects: any[] = [];
-  public selectedSubject: any;
+  subjects: ISubject[] = [];
+  selectedSubject: ISubject;
 
   private queryParamsIdSubject: number;
 
-  public selectedSubjectArea: string;
+  selectedSubjectAreas: ISubjectArea[] = [];
 
-  public subjectAreas: any[] = [];
-  public subjectAreaForDropdown: string[] = [];
+  subjectAreas: ISubjectArea[] = [];
 
-  public prioFrom: number = 1;
-  public prioTo: number = 10;
+  prioFrom = 1;
+  prioTo = 10;
 
-  public questionToAnswer: any;
+  questionToAnswer: any;
 
-  public multipleChoiceGuessedAnswer: number;
+  multipleChoiceGuessedAnswer: number;
 
-  public multipleChoiceQuestionAnsweredWrong: boolean = false;
-  public normalQuestionAnsweredWrong: boolean = false;
-  public answeredWithThoughtAnswer: boolean = false;
-  public multipleChoiceRightAnswer: string;
+  multipleChoiceQuestionAnsweredWrong = false;
+  normalQuestionAnsweredWrong = false;
+  answeredWithThoughtAnswer = false;
+  multipleChoiceRightAnswer: string;
 
-  public questionAnsweredCorrectly: boolean = false;
+  questionAnsweredCorrectly = false;
 
-  public answerGiven: boolean = false;
+  answerGiven = false;
 
-  public answer: string;
+  answer: string;
 
-  public showBlackCarret: boolean = false;
+  showBlackCarret = false;
 
-  public percentageOfAnswerToLow: boolean = false;
+  percentageOfAnswerToLow = false;
 
-  public noQuestionsFound: boolean = false;
+  noQuestionsFound = false;
 
-  public lastQuestions: any[] = [];
-  public lastAnswers: string[] = [];
+  lastQuestions: any[] = [];
+  lastAnswers: string[] = [];
 
-  public timeToAnswerQuestion: number;
-  public timeLeft: number;
-  public maxTime: number;
-  public progressBarWidth: number;
+  timeToAnswerQuestion: number;
+  timeLeft: number;
+  maxTime: number;
+  progressBarWidth: number;
 
   private timerSub: Subscription;
 
-  public questionImageSrc: string;
-  public questionLoading: boolean = false;
-  public showQuestionImageInFullScreen: boolean = false;
-  public fullScreenImagePath: string;
-  public onlyImageAnswers: boolean = false;
+  questionImageSrc: string;
+  questionLoading = false;
+  showQuestionImageInFullScreen = false;
+  fullScreenImagePath: string;
+  onlyImageAnswers = false;
 
   started = false;
 
@@ -90,22 +90,13 @@ export class AnswerQuestionComponent implements OnInit{
     })
   }
 
-  public subjectChanged(subject: any){
+  public subjectChanged(subject: ISubject){
     this.selectedSubject = subject;
-  }
-
-  public subjectAreaValueChange(){
-    this.selectedSubjectArea = this.subjectAreaComboBox.getSelectedItem().value;
   }
 
   private getSubjectAreas(){
     this.questionService.getSubjectAreas(this.selectedSubject.idSubject).subscribe(areas => {
       this.subjectAreas = areas;
-      this.subjectAreaForDropdown = [];
-      this.subjectAreaForDropdown.push('Alle Themenbereiche');
-      this.subjectAreas.forEach(area => {
-        this.subjectAreaForDropdown.push(area.descriptionSubjectArea);
-      })
     })
   }
   public startClick(){
@@ -140,9 +131,8 @@ export class AnswerQuestionComponent implements OnInit{
     }
     this.reset();
     this.noQuestionsFound = false;
-    let idSubjectArea = this.subjectAreas.find(f => f.descriptionSubjectArea == this.selectedSubjectArea);
     this.questionLoading = true;
-    this.questionService.getQuestionToAnswer(this.prioFrom, this.prioTo, this.selectedSubject.idSubject, idSubjectArea == null ? 0 : idSubjectArea.idSubjectArea, orderByLastTimeAnswered).pipe(mergeMap(question => {
+    this.questionService.getQuestionToAnswer(this.prioFrom, this.prioTo, this.selectedSubject.idSubject, this.selectedSubjectAreas.map(m => m.idSubjectArea), orderByLastTimeAnswered).pipe(mergeMap(question => {
       if (this.timeLeft != null) {
         this.timeLeft = this.maxTime;
         this.progressBarWidth = 100;

@@ -1,8 +1,4 @@
 <style>
-  .prioInputs {
-    width: 50px;
-  }
-
   .questionImage {
     max-width: 35%;
     height: auto;
@@ -21,37 +17,49 @@
   <div *ngIf="!started">
     <div class="row">
       <div class="col-6">
-        <div *ngIf="selectedSubject != null" id="subject" class="dropdown ml-3">
-          <button class="btn btn-outline-secondary dropdown-toggle w-75" type="button" id="subjectDropdown"
-            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            {{selectedSubject.description}}
-          </button>
-          <div class="dropdown-menu w-75" aria-labelledby="subjectDropdown">
-            <button *ngFor="let subject of subjects" class="dropdown-item" type="button"
-              (click)="subjectChanged(subject)">{{subject.description}}</button>
-          </div>
-        </div>
+        <p-dropdown class="col-8 col-md-10" styleClass="w-100" [options]="subjects" [(ngModel)]="selectedSubject"
+          (onChange)="subjectChanged($event.value)">
+          <ng-template let-subject pTemplate="selectedItem">
+            <div>{{subject.description}}</div>
+          </ng-template>
+          <ng-template let-subject pTemplate="item">
+            <div>{{subject.description}}</div>
+          </ng-template>
+        </p-dropdown>
       </div>
       <div class="col-6">
-        <input list="subjectAreas" class="datalist">
-        <datalist id="subjectAreas">
-          <ng-container *ngFor="let subject of subjectAreaForDropdown">
-            <option value="{{subject}}"></option>
-          </ng-container>
-        </datalist>
+        <p-multiSelect styleClass="w-100" display="chip" [options]="subjectAreas" [(ngModel)]="selectedSubjectAreas"
+          optionLabel="descriptionSubjectArea" defaultLabel="Themenbereiche auswählen">
+          <ng-template let-subjectArea pTemplate="item">
+            <div>{{subjectArea.descriptionSubjectArea}}</div>
+          </ng-template>
+        </p-multiSelect>
       </div>
     </div>
-    <div class="row mt-4 ml-2">
+    <div class="row mt-4 ml-1">
       <div class="col-md-6 col-sm-12">
-        <span>Fragen aus Priorisierung&nbsp;&nbsp;</span>
-        <input class="prioInputs textfield" type="number" [(ngModel)]="prioFrom" />
-        <span>&nbsp;&nbsp;bis&nbsp;&nbsp;</span>
-        <input class="prioInputs textfield" type="number" [(ngModel)]="prioTo" /><span>&nbsp;&nbsp;</span>
-      </div>
-      <div class="col-md-6 col-sm-12">
-        <span>Zeit pro Frage:&nbsp;&nbsp;</span>
-        <input class="prioInputs textfield" type="number" [(ngModel)]="timeToAnswerQuestion" />
-        <span>&nbsp;&nbsp;Sekunden</span>
+        <div class="d-flex">
+          <div class="d-flex flex-column">
+            <small for="prioFor" class="control-label">Prio von</small>
+            <p-inputNumber [(ngModel)]="prioFrom" [showButtons]="true" spinnerMode="vertical" id="prioFor"
+              inputStyleClass="prioInputs" [min]="1" [max]="10" incrementButtonIcon="pi pi-plus"
+              decrementButtonIcon="pi pi-minus"></p-inputNumber>
+          </div>
+          <div class="d-flex flex-column">
+            <small for="prioTo" class="control-label">Prio bis</small>
+            <p-inputNumber [(ngModel)]="prioTo" [showButtons]="true" spinnerMode="vertical" id="prioTo"
+              inputStyleClass="prioInputs" [min]="1" [max]="10" incrementButtonIcon="pi pi-plus"
+              decrementButtonIcon="pi pi-minus"> </p-inputNumber>
+          </div>
+        </div>
+        <div class="mt-2 mt-sm-0">
+          <div class="d-flex flex-column">
+            <small for="time" class="control-label">Zeit</small>
+            <p-inputNumber [(ngModel)]="timeToAnswerQuestion" [showButtons]="true" spinnerMode="vertical" id="time"
+              inputStyleClass="prioInputs" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus">
+            </p-inputNumber>
+          </div>
+        </div>
       </div>
     </div>
     <div class="mt-3 ml-3">
@@ -82,10 +90,10 @@
           </a>
         </div>
         <div class="col-8 col-lg-10 ">
-          <div *ngIf="this.questionImageSrc != null && this.questionImageSrc != ''"  (click)="imageClicked(this.questionImageSrc)">
-            <img [src]="this.questionImageSrc"
-              class="questionImage"/>
-              <br>
+          <div *ngIf="this.questionImageSrc != null && this.questionImageSrc != ''"
+            (click)="imageClicked(this.questionImageSrc)">
+            <img [src]="this.questionImageSrc" class="questionImage" />
+            <br>
           </div>
           <span class="h5">{{questionToAnswer.question}}</span>
         </div>
@@ -191,9 +199,11 @@
             <ul>
               <ng-container *ngFor="let possibleAnswer of questionToAnswer.answers">
                 <li *ngIf="!possibleAnswer.answerWrong">
-                  <span *ngIf="possibleAnswer.answerImage == '' || possibleAnswer.answerImage == null">{{possibleAnswer.answer}}</span>
+                  <span
+                    *ngIf="possibleAnswer.answerImage == '' || possibleAnswer.answerImage == null">{{possibleAnswer.answer}}</span>
                   <div class="mt-2" (click)="imageClicked(possibleAnswer.answerImage)">
-                    <img *ngIf="possibleAnswer.answerImage != null && possibleAnswer.answerImage != ''" class="questionImage" [src]="possibleAnswer.answerImage">
+                    <img *ngIf="possibleAnswer.answerImage != null && possibleAnswer.answerImage != ''"
+                      class="questionImage" [src]="possibleAnswer.answerImage">
                   </div>
                 </li>
               </ng-container>
@@ -216,10 +226,12 @@
             <ul>
               <ng-container *ngFor="let possibleAnswer of questionToAnswer.answers">
                 <li *ngIf="!possibleAnswer.answerWrong">
-                    <span *ngIf="possibleAnswer.answerImage == '' || possibleAnswer.answerImage == null">{{possibleAnswer.answer}}</span>
-                    <div class="mt-2" (click)="imageClicked(possibleAnswer.answerImage)">
-                      <img *ngIf="possibleAnswer.answerImage != null && possibleAnswer.answerImage != ''" class="questionImage" [src]="possibleAnswer.answerImage">
-                    </div>
+                  <span
+                    *ngIf="possibleAnswer.answerImage == '' || possibleAnswer.answerImage == null">{{possibleAnswer.answer}}</span>
+                  <div class="mt-2" (click)="imageClicked(possibleAnswer.answerImage)">
+                    <img *ngIf="possibleAnswer.answerImage != null && possibleAnswer.answerImage != ''"
+                      class="questionImage" [src]="possibleAnswer.answerImage">
+                  </div>
                 </li>
               </ng-container>
             </ul>
@@ -243,8 +255,8 @@
                 <li *ngIf="!possibleAnswer.answerWrong">
                   {{possibleAnswer.answer}}
                   <div class="mt-2" (click)="imageClicked(possibleAnswer.answerImage)">
-                    <img *ngIf="possibleAnswer.answerImage != null && possibleAnswer.answerImage != ''" class="questionImage"
-                      [src]="possibleAnswer.answerImage">
+                    <img *ngIf="possibleAnswer.answerImage != null && possibleAnswer.answerImage != ''"
+                      class="questionImage" [src]="possibleAnswer.answerImage">
                   </div>
                 </li>
               </ng-container>
@@ -255,5 +267,4 @@
     </div>
   </div>
 
-<show-image-in-full-screen #showImageComponent></show-image-in-full-screen>
-
+  <show-image-in-full-screen #showImageComponent></show-image-in-full-screen>

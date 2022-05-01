@@ -1,5 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { IGetQuestionToAnswerRequest } from "src/app/interfaces/interfaces";
 import { Values } from "src/app/shared/values";
 
 @Injectable()
@@ -17,8 +18,15 @@ export class AnswerQuestionService{
     return this.http.get<any[]>(Values.getConnectionString() + `SubjectArea/GetSubjectAreas?idSubject=${idSubject}`);
   }
 
-  public getQuestionToAnswer(prioFrom: number, prioTo: number, idSubject: number, idSubjectArea: number, orderByLastTimeAnswered: boolean){
-    return this.http.get<any>(Values.getConnectionString() + `Question/GetQuestionToAnswer?prioFrom=${prioFrom}&prioTo=${prioTo}&idSubject=${idSubject}&idSubjectArea=${idSubjectArea}&orderByLastTimeAnswered=${orderByLastTimeAnswered}`);
+  public getQuestionToAnswer(prioFrom: number, prioTo: number, idSubject: number, idSubjectAreas: number[], orderByLastTimeAnswered: boolean){
+    const body = <IGetQuestionToAnswerRequest> {
+      prioFrom: prioFrom,
+      prioTo: prioTo,
+      idSubject: idSubject,
+      idSubjectAreas: idSubjectAreas,
+      orderByLastTimeAnswered: orderByLastTimeAnswered
+    }
+    return this.http.post<any>(Values.getConnectionString() + `Question/GetQuestionToAnswer`, body);
   }
 
   public adjustPrioOfQuestion(idQuestion: number, answeredCorrectly: boolean){

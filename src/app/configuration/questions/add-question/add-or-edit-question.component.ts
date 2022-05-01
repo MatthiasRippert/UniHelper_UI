@@ -8,19 +8,10 @@ import { forkJoin, Observable, of } from "rxjs";
 import { ignoreElements, map, mergeMap, tap } from "rxjs/operators";
 import { CommonRequestService } from "src/app/shared/common-request.service";
 import { ShowImageInFullScreenComponent } from "src/app/shared/show-image-in-full-screen/show-image-in-full-screen.component";
+import { IAnswer, IAnswerImageFile, ISubject, ISubjectArea } from "../../../interfaces/interfaces";
 import { ConfigurationAddQuestionService } from "./shared/add-or-edit-question.service";
 
 
-interface IAnswer{
-  idAnswer: number,
-  answer: string,
-  answerImage: string,
-  newAnswer: boolean
-}
-interface IAnswerImageFile{
-  idAnswer: number,
-  image: File
-}
 @Component({
   selector: 'configuration-add-question',
   templateUrl: './add-or-edit-question.component.html'
@@ -30,46 +21,46 @@ export class ConfigurationAddOrEditQuestionComponent implements OnInit{
   @ViewChild('subjectAreaComboBox') subjectAreaComboBox: jqxComboBoxComponent;
   @ViewChild('showImageComponent') showImageComponent: ShowImageInFullScreenComponent;
 
-  public title: string = 'Frage hinzufügen';
-  public subjects: any[];
-  public selectedSubject: any;
+  title: string = 'Frage hinzufügen';
+  subjects: ISubject[];
+  selectedSubject: ISubject;
 
-  private subjectAreas: any[];
-  public subjectAreaForDropdown: string[];
-  public selectedSubjectArea: string;
+  private subjectAreas: ISubjectArea[];
+  filteredSubjectAreas: ISubjectArea[];
+  selectedSubjectArea: ISubjectArea;
 
-  public selectedQuestionType: string = 'normal';
+  selectedQuestionType: string = 'normal';
 
-  public answers: IAnswer[] = [];
+  answers: IAnswer[] = [];
 
-  public multipleChoiceRightAnswer: number = 0;
+  multipleChoiceRightAnswer: number = 0;
 
-  public selectedPrio: number = 5;
+  selectedPrio: number = 5;
 
-  public question: string;
+  question: string;
 
   private questionById: any;
   private idQuestion: number;
 
-  public questionSaved: boolean = false;
+  questionSaved = false;
 
-  public notesWithPossibleQuestions: any[] = [];
+  notesWithPossibleQuestions: any[] = [];
 
-  public openedNotes: number[] = [];
+  openedNotes: number[] = [];
 
-  public suggestedQuestionsExist: boolean;
+  suggestedQuestionsExist: boolean;
 
   private questionImage: File;
-  public questionImagePath: string;
+  questionImagePath: string;
   private questionImageUUID: string;
 
-  public showImageInFullScreen: boolean = false;
-  public fullScreenImagePath: string;
+  showImageInFullScreen = false;
+  fullScreenImagePath: string;
 
   private originalAnswersWithAnswerImageUUID: IAnswer[] = [];
   private answerImageFiles: IAnswerImageFile[] = [];
 
-  public saveQuestionLoading: boolean = false;
+  saveQuestionLoading = false;
 
   smallScreen = false;
 
@@ -169,34 +160,23 @@ export class ConfigurationAddOrEditQuestionComponent implements OnInit{
     })
   }
 
-  public subjectChanged(subject: any){
+  public subjectChanged(subject: ISubject){
     this.selectedSubject = subject;
     this.commonRequestService.getSubjectAreas(this.selectedSubject.idSubject).subscribe(areas => {
       this.setSubjectAreas(areas);
     });
   }
 
-  private setSubjectAreas(areas: any[]){
+  private setSubjectAreas(areas: ISubjectArea[]){
       this.subjectAreas = areas;
-      this.subjectAreaForDropdown = [];
-      this.selectedSubjectArea = '';
-      for(var i = 0; i < this.subjectAreas.length; i++){
-        this.subjectAreaForDropdown.push(this.subjectAreas[i].descriptionSubjectArea);
-      }
+      this.filteredSubjectAreas = this.subjectAreas;
 
       if(this.questionById != null){
-        this.selectedSubjectArea = areas.find(f => f.idSubjectArea == this.questionById.idSubjectArea).descriptionSubjectArea;
+        this.selectedSubjectArea = areas.find(f => f.idSubjectArea == this.questionById.idSubjectArea);
       }
       else{
         this.getSuggestedQuestions();
       }
-  }
-
-  public subjectAreaValueChange(subjectArea: any){
-    this.selectedSubjectArea = this.subjectAreaComboBox.getSelectedItem().value;
-    if(this.questionById == null){
-      this.getSuggestedQuestions();
-    }
   }
 
   public setSelectedType(questionType: string){
@@ -254,6 +234,9 @@ export class ConfigurationAddOrEditQuestionComponent implements OnInit{
     this.answers.push({idAnswer: nextAnswerId, answer: '', answerImage: '', newAnswer: true});
   }
   public addAnswerImage(answerImagePath: string){
+    if(this.answers.length > 0 && this.answers[0].answer === '' && this.answers[0].answerImage == ''){
+      this.answers = [];
+    }
     const nextAnswerId = this.getNextAnswerId();
     this.answers.push({idAnswer: nextAnswerId, answer: '', answerImage: answerImagePath, newAnswer: true})
   }
@@ -325,7 +308,6 @@ export class ConfigurationAddOrEditQuestionComponent implements OnInit{
   }
 
   private addNewQuestion(){
-    var idSubjectArea = this.subjectAreas.find(f => f.descriptionSubjectArea == this.selectedSubjectArea && f.idSubject == this.selectedSubject.idSubject).idSubjectArea;
     var idQuestionType = this.selectedQuestionType == 'normal' ? 1 : 2;
     let questionAnswers: any[] = [];
     this.answers.forEach(answer => {
@@ -346,7 +328,7 @@ export class ConfigurationAddOrEditQuestionComponent implements OnInit{
     })
     return this.questionService.saveQuestion(
       this.selectedSubject.idSubject,
-      idSubjectArea,
+      this.selectedSubjectArea.idSubjectArea,
       this.selectedPrio,
       this.question,
       this.questionImageUUID,
@@ -366,7 +348,6 @@ export class ConfigurationAddOrEditQuestionComponent implements OnInit{
   }
 
   private updateQuestion(){
-    var idSubjectArea = this.subjectAreas.find(f => f.descriptionSubjectArea == this.selectedSubjectArea && f.idSubject == this.selectedSubject.idSubject).idSubjectArea;
     var idQuestionType = this.selectedQuestionType == 'normal' ? 1 : 2;
     let oldAnswers = this.answers.filter(f => !f.newAnswer).map(m => {
       var newObj: any = {idAnswer: 0, answer: ''};
@@ -385,7 +366,7 @@ export class ConfigurationAddOrEditQuestionComponent implements OnInit{
     this.questionService.updateQuestion(
       this.idQuestion,
       this.selectedSubject.idSubject,
-      idSubjectArea,
+      this.selectedSubjectArea.idSubjectArea,
       this.selectedPrio,
       this.question,
       this.questionImageUUID,
@@ -427,9 +408,7 @@ export class ConfigurationAddOrEditQuestionComponent implements OnInit{
   }
 
   private getSuggestedQuestions(){
-    var subjectArea = this.subjectAreas.find(f => f.descriptionSubjectArea == this.selectedSubjectArea && f.idSubject == this.selectedSubject.idSubject);
-
-    this.questionService.getSuggestedQuestions(this.selectedSubject.idSubject, subjectArea == null ? 0 : subjectArea.idSubjectArea).subscribe(suggestedQuestions => {
+    this.questionService.getSuggestedQuestions(this.selectedSubject.idSubject, this.selectedSubjectArea == null ? 0 : this.selectedSubjectArea.idSubjectArea).subscribe(suggestedQuestions => {
       this.notesWithPossibleQuestions = suggestedQuestions;
       if(this.notesWithPossibleQuestions.length > 0){
         this.suggestedQuestionsExist = true;
@@ -455,10 +434,9 @@ export class ConfigurationAddOrEditQuestionComponent implements OnInit{
 
   public takeSuggestedQuestion(question: any, note: any){
     this.question = question.question;
-    let subjectArea = this.subjectAreas.find(f => f.idSubjectArea == note.idSubjectArea).descriptionSubjectArea;
-    let index = this.subjectAreaForDropdown.findIndex(f => f == subjectArea);
+    let index = this.subjectAreas.findIndex(f => f.idSubjectArea == note.idSubjectArea);
     if(index != -1){
-      this.selectedSubjectArea = this.subjectAreaForDropdown[index];
+      this.selectedSubjectArea = this.subjectAreas[index];
     }
   }
 
@@ -483,5 +461,11 @@ export class ConfigurationAddOrEditQuestionComponent implements OnInit{
   }
   public onImageClick(imagePath: string){
     this.showImageComponent.showImageInFullScreen(imagePath);
+  }
+
+  public filterSubjectArea(event: any): void {
+    this.filteredSubjectAreas = this.subjectAreas.filter(f => f.descriptionSubjectArea.includes(event.query));
+
+    console.log(this.selectedSubjectArea);
   }
 }
