@@ -1,6 +1,7 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
-import { AnswerQuestionController } from "./answer-question.component";
+import { AuthGuard } from "../guards/auth-guard.service";
+import { AnswerQuestionComponent } from "./answer-question.component";
 
 const routes: Routes = [
  {
@@ -8,7 +9,8 @@ const routes: Routes = [
    data: {
      title: 'Fragen beantworten'
    },
-   component: AnswerQuestionController
+    component: AnswerQuestionComponent,
+    canActivate: [AuthGuard]
  }
 ];
 

@@ -1,0 +1,11 @@
+<div class="wrapper fadeInDown">
+  <div id="formContent">
+    <form [formGroup]="loginFormGroup">
+      <input type="text" id="login" class="fadeIn second" name="login" placeholder="Name" formControlName="user">
+      <input type="password" id="password" class="fadeIn third" name="login" placeholder="Passwort" formControlName="password" (keydown.enter)="login()">
+      <input (click)="login()" type="submit" class="fadeIn fourth" value="Log In">
+      <br>
+      <small *ngIf="invalidLogin" class="text-danger">Username oder Passwort falsch</small>
+    </form>
+  </div>
+</div>

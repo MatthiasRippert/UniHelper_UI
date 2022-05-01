@@ -1,0 +1,74 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-6">
+      <h2 class="mt-4 font-weight-light">{{title}}</h2>
+    </div>
+    <div class="col-6">
+      <button style="width: auto;" type="button" class="mt-4 float-right btn btn-outline-primary"
+        (click)="saveVocabulary()" [disabled]="vocabulary == null || vocabulary == '' || (translations.length == 1 && translations[0].translation == '')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+          class="bi bi-save text-success" viewBox="0 0 16 16">
+          <path
+            d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v7.293l2.646-2.647a.5.5 0 0 1 .708.708l-3.5 3.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L7.5 9.293V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z" />
+        </svg>
+        &nbsp;Vokabel speichern
+      </button>
+    </div>
+  </div>
+  <hr class="my-3">
+  <div class="form-group">
+    <label for="subject">Fach</label>
+    <div *ngIf="selectedSubject != null" id="subject" class="dropdown">
+      <button class="btn btn-outline-secondary dropdown-toggle w-75" type="button" id="subjectDropdown"
+        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        {{selectedSubject.description}}
+      </button>
+      <div class="dropdown-menu w-75" aria-labelledby="subjectDropdown">
+        <button *ngFor="let subject of subjects" class="dropdown-item" type="button"
+          (click)="subjectChanged(subject)">{{subject.description}}</button>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="prio" class="form-label">Priorisierung</label>
+    <br>
+    <input type="range" class="form-range w-75" [value]="selectedPrio" min="1" max="10" step="1" id="prio" #prioSlider
+      (input)="prioRangeChanged(prioSlider.value)" />
+    <p class="w-75 text-center">{{selectedPrio}}</p>
+  </div>
+  <div class="form-group">
+    <label for="vocabulary" class="form-label">Vokabel</label>
+    <input type="text" class="form-control w-75" placeholder="Vokabel eingeben..." [(ngModel)]="vocabulary"/>
+  </div>
+  <div class="form-group">
+    <div class="row w-75">
+      <div class="col-9">
+        <label for="translation">Übersetzung</label>
+      </div>
+      <div class="col-3">
+        <button style="width: auto;" type="button" class="float-right btn btn-outline-primary" (click)="addTranslation()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg text-success" viewBox="0 0 16 16">
+            <path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2H9v6a1 1 0 1 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z" />
+          </svg>
+          &nbsp;Übersetzung hinzufügen
+        </button>
+      </div>
+    </div>
+    <div class="mt-3" *ngFor="let translation of translations">
+      <div class="row w-75">
+        <div class="col-9">
+          <input type="text" class="form-control" placeholder="Übersetzung eingeben..." [(ngModel)]="translation.translation"/>
+        </div>
+        <div class="col-3">
+          <button type="button" class="float-right btn btn-outline-danger" (click)="removeTranslation(translation)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash text-danger"
+              viewBox="0 0 16 16">
+              <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z" />
+            </svg>
+            &nbsp;Übersetzung entfernen
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

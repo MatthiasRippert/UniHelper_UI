@@ -29,14 +29,12 @@ export class NavigationComponent implements OnInit {
     ){}
     ngOnInit(): void {
       this.resolution = window.screen.width * window.devicePixelRatio;
-      console.log("Resolution: ", this.resolution);
       this.getNavItems();
     }
 
     private getNavItems(){
       return this.navigationService.getNavigation().subscribe(nav => {
         this.navigation = nav;
-        console.log("Nav: ", this.navigation);
       })
     }
 

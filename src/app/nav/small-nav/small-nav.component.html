@@ -1,0 +1,47 @@
+<style>
+
+</style>
+<div *ngIf="!showConfigurationMenu" class="smallNavbar smallNavbar-height">
+    <div class="navbar-item">
+      <a class="navbar-link" href="/#/answerQuestion">
+        <i class="bi bi-question-circle navbar-icon"></i>
+        <small>Fragen</small>
+      </a>
+    </div>
+    <div class="navbar-item">
+      <a class="navbar-link" href="/#/vocabulary">
+        <i class="bi bi-book navbar-icon"></i>
+        <small>Vokabeln</small>
+      </a>
+    </div>
+    <div class="navbar-item">
+      <a class="navbar-link" href="/#/notes">
+        <i class="bi bi-journal-text navbar-icon"></i>
+        <small>Notizen</small>
+      </a>
+    </div>
+    <div class="navbar-item">
+      <a class="navbar-link" (click)="showConfigurationMenu = true">
+        <i class="bi bi-tools navbar-icon"></i>
+        <small>Konfiguration</small>
+      </a>
+    </div>
+</div>
+
+<div *ngIf="showConfigurationMenu" class="configuration-menu">
+  <div class="row ml-1 mt-2">
+    <span class="h5 col-10 font-weight-light">Konfiguration</span>
+    <span class="col-2" (click)="showConfigurationMenu = false">&times;</span>
+  </div>
+  <ul class="configuration-menu-list mt-2">
+    <li>
+      <a routerLink="/configuration/manageQuestions" (click)="showConfigurationMenu = false"><i class="bi bi-question-circle"></i>&nbsp;&nbsp;Fragen verwalten</a>
+    </li>
+    <li class="my-3">
+      <a routerLink="/configuration/manageVocabulary" (click)="showConfigurationMenu = false"><i class="bi bi-chat"></i>&nbsp;&nbsp;Vokabeln verwalten</a>
+    </li>
+    <li>
+      <a routerLink="/configuration/manageSubjectAreas" (click)="showConfigurationMenu = false"><i class="bi bi-folder"></i>&nbsp;&nbsp;Themenbereiche verwalten</a>
+    </li>
+  </ul>
+</div>

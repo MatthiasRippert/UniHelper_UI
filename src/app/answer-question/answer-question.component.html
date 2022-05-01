@@ -2,64 +2,258 @@
   .prioInputs {
     width: 50px;
   }
+
+  .questionImage {
+    max-width: 35%;
+    height: auto;
+  }
 </style>
 <div class="container-fluid">
-  <h2 class="mt-4 font-weight-light">Fragen beantworten</h2>
-  <hr class="my-3">
-
   <div class="row">
-    <div class="col-6">
-      <div *ngIf="selectedSubject != null" id="subject" class="dropdown ml-3">
-        <button class="btn btn-outline-secondary dropdown-toggle w-75" type="button" id="subjectDropdown"
-          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          {{selectedSubject.description}}
-        </button>
-        <div class="dropdown-menu w-75" aria-labelledby="subjectDropdown">
-          <button *ngFor="let subject of subjects" class="dropdown-item" type="button"
-            (click)="subjectChanged(subject)">{{subject.description}}</button>
+    <h2 class="page-header col-8 col-md-10">Fragen beantworten</h2>
+    <div *ngIf="started" class="col-4 col-md-2 page-header-button">
+      <button class="btn btn-outline-danger" (click)="questionToAnswer=null;started=false">
+        <span class="text-danger">Beenden</span>
+      </button>
+    </div>
+  </div>
+  <hr class="page-header-divider">
+  <div *ngIf="!started">
+    <div class="row">
+      <div class="col-6">
+        <div *ngIf="selectedSubject != null" id="subject" class="dropdown ml-3">
+          <button class="btn btn-outline-secondary dropdown-toggle w-75" type="button" id="subjectDropdown"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{selectedSubject.description}}
+          </button>
+          <div class="dropdown-menu w-75" aria-labelledby="subjectDropdown">
+            <button *ngFor="let subject of subjects" class="dropdown-item" type="button"
+              (click)="subjectChanged(subject)">{{subject.description}}</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <input list="subjectAreas" class="datalist">
+        <datalist id="subjectAreas">
+          <ng-container *ngFor="let subject of subjectAreaForDropdown">
+            <option value="{{subject}}"></option>
+          </ng-container>
+        </datalist>
+      </div>
+    </div>
+    <div class="row mt-4 ml-2">
+      <div class="col-md-6 col-sm-12">
+        <span>Fragen aus Priorisierung&nbsp;&nbsp;</span>
+        <input class="prioInputs textfield" type="number" [(ngModel)]="prioFrom" />
+        <span>&nbsp;&nbsp;bis&nbsp;&nbsp;</span>
+        <input class="prioInputs textfield" type="number" [(ngModel)]="prioTo" /><span>&nbsp;&nbsp;</span>
+      </div>
+      <div class="col-md-6 col-sm-12">
+        <span>Zeit pro Frage:&nbsp;&nbsp;</span>
+        <input class="prioInputs textfield" type="number" [(ngModel)]="timeToAnswerQuestion" />
+        <span>&nbsp;&nbsp;Sekunden</span>
+      </div>
+    </div>
+    <div class="mt-3 ml-3">
+      <button class="btn btn-outline-success" (click)="startClick()">
+        Starten!
+      </button>
+    </div>
+  </div>
+  <div class="mt-4 alert alert-danger" roler="alert" *ngIf="noQuestionsFound">
+    <span>Keine Fragen gefunden!</span>
+  </div>
+  <div *ngIf="questionLoading" class="mt-3 loader mx-auto"></div>
+  <div *ngIf="questionToAnswer" class="mt-3 card bg-light">
+    <div class="card-header text-center">
+      <ng-container *ngIf="maxTime != null">
+        <div class="progress w-100">
+          <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+            [style.width.%]="progressBarWidth" [class.bg-warning]="progressBarWidth < 50"
+            [class.bg-danger]="progressBarWidth < 25" aria-valuenow="{{timeLeft}}" aria-valuemin="0"
+            aria-valuemax="{{timeToAnswerQuestion}}"></div>
+        </div>
+        <span class="text-center">{{timeLeft}}</span>
+      </ng-container>
+      <div class="row mt-3">
+        <div class="col-2 col-lg-1">
+          <a *ngIf="lastQuestions.length > 0" (click)="getLastAnsweredQuestion()">
+            <i class="bi bi-caret-left" width="32" height="32"></i>
+          </a>
+        </div>
+        <div class="col-8 col-lg-10 ">
+          <div *ngIf="this.questionImageSrc != null && this.questionImageSrc != ''"  (click)="imageClicked(this.questionImageSrc)">
+            <img [src]="this.questionImageSrc"
+              class="questionImage"/>
+              <br>
+          </div>
+          <span class="h5">{{questionToAnswer.question}}</span>
+        </div>
+        <div class="col-2 col-lg-1 ">
+          <a (mousedown)="showBlackCarret = true; this.getQuestionToAnswer(false)" (mouseup)="showBlackCarret = false">
+            <i *ngIf="!showBlackCarret" class="bi bi-caret-right" width="32" height="32"></i>
+            <i *ngIf="showBlackCarret" class="bi bi-caret-right-fill" width="32" height="32"></i>
+          </a>
         </div>
       </div>
     </div>
-    <div class="col-6">
-      <jqxComboBox class="w-75" #subjectAreaComboBox [height]="38"
-        [source]="subjectAreaForDropdown" [selectedIndex]="0" (onChange)="subjectAreaValueChange()">
-      </jqxComboBox>
-    </div>
-  </div>
-  <div class="mt-4 ml-3">
-      <span>Fragen aus Priorisierung&nbsp;&nbsp;</span>
-      <input class="prioInputs" type="number" [(ngModel)]="prioFrom"/>
-      <span>&nbsp;&nbsp;bis&nbsp;&nbsp;</span>
-      <input class="prioInputs" type="number" [ngModel]="prioTo"/><span>&nbsp;&nbsp;</span>
-  </div>
-  <div class="mt-3 ml-3">
-    <button class="btn btn-outline-success" (click)="getQuestionToAnswer()">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg text-success" viewBox="0 0 16 16">
-        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
-      </svg>
-      Starten!
-    </button>
-  </div>
-  <div *ngIf="questionToAnswer != null" class="mt-5 card bg-light">
-    <div class="card-header text-center"><span class="h5">{{questionToAnswer[0].question}}</span></div>
     <div class="card-body">
-      <div class="row">
-        <div class="col-1">
-          <a (click)="getLastAnsweredQuestion()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
-              <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
-            </svg>
-          </a>
+      <div *ngIf="questionToAnswer.idQuestionType == 1">
+        <div>
+          <input class="form-control" [(ngModel)]="answer" placeholder="Antwort..."
+            (keyup.enter)="!answerGiven && checkAnswer()" />
         </div>
-        <div class="col-10"></div>
-        <div class="col-1">
-          <a (click)="getQuestionToAnswer()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-caret-right" viewBox="0 0 16 16">
-              <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
-            </svg>
-          </a>
+      </div>
+      <div *ngIf="questionToAnswer.idQuestionType == 2">
+        <div class="row">
+          <div class="col-6">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <input type="checkbox" (change)="multipleChoiceAnswerSelected(1)"
+                    [checked]="multipleChoiceGuessedAnswer == 1" />
+                </span>
+              </div>
+              <input type="text" class="form-control" [(ngModel)]="questionToAnswer.answers[0].answer" disabled />
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <input type="checkbox" (change)="multipleChoiceAnswerSelected(2)"
+                    [checked]="multipleChoiceGuessedAnswer == 2" />
+                </span>
+              </div>
+              <input type="text" class="form-control" [(ngModel)]="questionToAnswer.answers[1].answer" disabled />
+            </div>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-6">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <input type="checkbox" (change)="multipleChoiceAnswerSelected(3)"
+                    [checked]="multipleChoiceGuessedAnswer == 3" />
+                </span>
+              </div>
+              <input type="text" class="form-control" [(ngModel)]="questionToAnswer.answers[2].answer" disabled />
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <input type="checkbox" (change)="multipleChoiceAnswerSelected(4)"
+                    [checked]="multipleChoiceGuessedAnswer == 4" />
+                </span>
+              </div>
+              <input type="text" class="form-control" [(ngModel)]="questionToAnswer.answers[3].answer" disabled />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container mt-3">
+        <div class="answerButtons">
+          <ng-container *ngIf="!onlyImageAnswers">
+            <div class="mr-3">
+              <button class="btn btn-outline-primary" (click)="!answerGiven && checkAnswer()" [disabled]="answerGiven">
+                Antworten
+              </button>
+            </div>
+            <div>
+              <button class="btn btn-outline-primary" (click)="!answerGiven && answeredWithThoughtAnswer = true"
+                [disabled]="answerGiven">
+                Gedachte Antwort
+              </button>
+            </div>
+          </ng-container>
+          <div *ngIf="onlyImageAnswers">
+            <button class="btn btn-outline-primary" (click)="!answerGiven && answeredWithThoughtAnswer = true"
+              [disabled]="answerGiven">
+              Antwort anzeigen
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <div class="alert alert-danger" roler="alert" *ngIf="multipleChoiceQuestionAnsweredWrong">
+            <ng-container *ngIf="questionToAnswer.idQuestionType == 2">
+              <span>Falsche Antwort! Richtige Antwort: <strong>{{multipleChoiceRightAnswer}}</strong></span>
+            </ng-container>
+          </div>
+          <div class="alert alert-success" role="alert" *ngIf="questionAnsweredCorrectly">
+            <span>Richtige Antwort!</span>
+          </div>
+          <div class="alert alert-warning" role="alert" *ngIf="percentageOfAnswerToLow">
+            <span>Antwort eventuell falsch! Richtige Antworten</span>
+            <ul>
+              <ng-container *ngFor="let possibleAnswer of questionToAnswer.answers">
+                <li *ngIf="!possibleAnswer.answerWrong">
+                  <span *ngIf="possibleAnswer.answerImage == '' || possibleAnswer.answerImage == null">{{possibleAnswer.answer}}</span>
+                  <div class="mt-2" (click)="imageClicked(possibleAnswer.answerImage)">
+                    <img *ngIf="possibleAnswer.answerImage != null && possibleAnswer.answerImage != ''" class="questionImage" [src]="possibleAnswer.answerImage">
+                  </div>
+                </li>
+              </ng-container>
+            </ul>
+            <div class="decisionButton">
+              <div>
+                <button class="btn btn-outline-danger" (click)="addAnswerToWrongAnswers()">
+                  Ant. Falsch
+                </button>
+              </div>
+              <div>
+                <button class="btn btn-outline-success" (click)="addAnswerToRightAnswers()">
+                  Ant. Richtig
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="alert alert-info" role="alert" *ngIf="answeredWithThoughtAnswer">
+            <span>Richtige Antworten</span>
+            <ul>
+              <ng-container *ngFor="let possibleAnswer of questionToAnswer.answers">
+                <li *ngIf="!possibleAnswer.answerWrong">
+                    <span *ngIf="possibleAnswer.answerImage == '' || possibleAnswer.answerImage == null">{{possibleAnswer.answer}}</span>
+                    <div class="mt-2" (click)="imageClicked(possibleAnswer.answerImage)">
+                      <img *ngIf="possibleAnswer.answerImage != null && possibleAnswer.answerImage != ''" class="questionImage" [src]="possibleAnswer.answerImage">
+                    </div>
+                </li>
+              </ng-container>
+            </ul>
+            <div class="decisionButton">
+              <div>
+                <button class="btn btn-outline-danger" (click)="progressThoughtAnswerResult(false)">
+                  Ant. Falsch
+                </button>
+              </div>
+              <div>
+                <button class="btn btn-outline-success" (click)="progressThoughtAnswerResult(true)">
+                  Ant. Richtig
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="alert alert-danger" role="alert" *ngIf="normalQuestionAnsweredWrong">
+            <span>Antwort falsch! Richtige Antworten</span>
+            <ul>
+              <ng-container *ngFor="let possibleAnswer of questionToAnswer.answers">
+                <li *ngIf="!possibleAnswer.answerWrong">
+                  {{possibleAnswer.answer}}
+                  <div class="mt-2" (click)="imageClicked(possibleAnswer.answerImage)">
+                    <img *ngIf="possibleAnswer.answerImage != null && possibleAnswer.answerImage != ''" class="questionImage"
+                      [src]="possibleAnswer.answerImage">
+                  </div>
+                </li>
+              </ng-container>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
+
+<show-image-in-full-screen #showImageComponent></show-image-in-full-screen>
+

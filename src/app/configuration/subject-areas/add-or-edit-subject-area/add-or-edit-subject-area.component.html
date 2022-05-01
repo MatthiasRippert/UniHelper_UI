@@ -1,0 +1,41 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-6">
+      <h2 class="page-header">{{title}}</h2>
+    </div>
+    <div class="col-6">
+      <button style="width: auto;" type="button" class="mt-4 float-right btn btn-outline-primary"
+        (click)="saveSubjectArea()" [disabled]="subjectArea == null || subjectArea == ''">
+        <i class="bi bi-save text-success" width="16" height="16"></i>
+        <span *ngIf="!smallScreen">&nbsp;Themenbereich speichern</span>
+        <span *ngIf="smallScreen">&nbsp;speichern</span>
+      </button>
+    </div>
+  </div>
+  <hr class="my-3">
+  <div *ngIf="subjectAreaExists" class="mt-3 alert alert-danger" role="alert">
+    <span>Der Themenbereich <strong>{{subjectArea}}</strong> existiert bereits für das Fach
+      <strong>{{selectedSubject.description}}</strong>!</span>
+  </div>
+  <div *ngIf="subjectAreaSaved" class="mt-3 alert alert-success" role="alert">
+    <span>Erfolgreich gespeichert!</span>
+  </div>
+  <div *ngIf="subjects.length > 0">
+    <div class="form-group">
+      <label for="subject">Fach</label>
+      <div id="subject" class="dropdown">
+        <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" id="subjectDropdown"
+          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {{selectedSubject.description}}
+        </button>
+        <div class="dropdown-menu w-100" aria-labelledby="subjectDropdown">
+          <button *ngFor="let subject of subjects" class="dropdown-item" type="button"
+            (click)="subjectChanged(subject)">{{subject.description}}</button>
+        </div>
+      </div>
+    </div>
+    <div class="from-group">
+      <label for="subjectArea">Themenbereich</label>
+      <input type="text" class="form-control" id="subjectArea" aria-describedby="Themenbereich" placeholder="Themenbereich..." [(ngModel)]="subjectArea">
+    </div>
+</div>

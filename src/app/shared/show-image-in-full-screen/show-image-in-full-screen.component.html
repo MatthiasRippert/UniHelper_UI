@@ -1,0 +1,13 @@
+<style>
+  .fullscreenImage{
+    max-width: 100%;
+    height: auto;
+  }
+</style>
+
+<div class="modal" *ngIf="show">
+  <div class="modal-content">
+    <span class="close ml-auto" (click)="show = false">&times;</span>
+    <img class="fullscreenImage mt-2" [src]="imagePath" />
+  </div>
+</div>

@@ -1,0 +1,83 @@
+@media(min-width: 900px) {
+  .page-header{
+    font-weight: 300 !important;
+    margin-top: 1.5rem !important;
+    font-size: 2rem;
+  }
+
+  .page-header-button {
+    margin-top: 1.5rem !important;
+  }
+
+  .page-header-divider{
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+}
+@media(max-width: 900px) {
+  .page-header {
+    font-weight: 300 !important;
+    margin-top: 0.5rem !important;
+    font-size: 1.3rem;
+  }
+
+  .page-header-button {
+    margin-top: 0.5rem !important;
+  }
+
+  .page-header-divider {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+}
+
+.datalist {
+  font-weight: 400;
+  vertical-align: middle;
+  border: 1px solid gray;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: 0.25rem;
+  background-color: transparent;
+  width: 90%;
+}
+
+.textfield {
+  font-weight: 400;
+  vertical-align: middle;
+  border: 1px solid gray;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: 0.25rem;
+  background-color: transparent;
+}
+
+.answerButtons {
+  display: flex;
+  justify-content: center;
+}
+
+.decisionButton {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+html, body{
+  height: 100%;
+  width: 100%;
+}
+
+.main{
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.footer{
+  flex: 0;
+  background-color: green;
+}
+

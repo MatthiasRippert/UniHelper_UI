@@ -1,6 +1,7 @@
 import { HashLocationStrategy, LocationStrategy } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { RouterModule } from "@angular/router";
+import { AuthGuard } from "../guards/auth-guard.service";
 import { SubjectBiologyComponent } from "./biology/biology.component";
 import { SubjectBusinessComponent } from "./business/business.component";
 import { SubjectChemistryComponent } from "./chemistry/chemistry.component";
@@ -22,6 +23,7 @@ import { SubjectsRoutingModule } from "./subjects-routing.module";
     SubjectsRoutingModule
   ],
   providers: [
+    AuthGuard
   ]
 })
 

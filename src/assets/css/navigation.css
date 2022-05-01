@@ -1,0 +1,137 @@
+.navbar {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  background-color: #89cff0;
+}
+
+.smallNavbar {
+  width: 100%;
+  background-color: #89cff0;
+  display: flex;
+  justify-content: space-around;
+}
+
+@media(max-height: 450px){
+  .smallNavbar-height{
+    height: 12%;
+  }
+}
+
+@media(min-height: 450px){
+  .smallNavbar-height{
+    height: 8%;
+  }
+}
+@media(min-height: 600px) {
+  .smallNavbar-height {
+    height: 7%;
+  }
+}
+@media(min-height: 800px){
+    .smallNavbar-height {
+      height: 5%;
+    }
+}
+
+
+@media(min-width: 900px){
+  .navbar-item {
+    padding-left: 10%;
+    color: black;
+  }
+}
+
+@media(max-width: 900px){
+  .navbar-item {
+    color: black;
+    margin-top: auto !important;
+  }
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+div.navbar > div.navbar-item > a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.navbar-icon {
+  font-size: 1.5rem;
+}
+
+@media(max-width: 900px){
+  .navbar-icon {
+    font-size: 1rem;
+    text-align: center;
+  }
+}
+
+h1:hover {
+  color: rgb(100, 145, 158);
+}
+
+
+.navbar-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.navbar-dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #89cff0;
+  min-width: 250px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.navbar-dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.navbar-dropdown:hover .navbar-dropdown-content {
+  display: block;
+}
+
+.navbar-dropdown-content a:hover {
+  background-color: rgb(160, 230, 250);
+}
+
+
+
+@media(min-width: 900px){
+  a.navbar-link {
+    text-decoration: none;
+  }
+}
+
+@media(max-width: 900px) {
+  a.navbar-link {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+a.navbar-link:hover > * {
+  color: white;
+}
+
+
+.configuration-menu{
+    left: 0;
+    width: 100%;
+    background-color: #89cff0;
+}
+
+.configuration-menu-list {
+  list-style-type: none;
+}

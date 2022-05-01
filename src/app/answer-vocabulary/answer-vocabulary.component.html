@@ -1,0 +1,111 @@
+<div class="container-fluid">
+  <h2 class="mt-4 font-weight-light">Vokabeln beantworten</h2>
+  <hr class="my-3">
+  <div class="row">
+    <div class="col-12">
+      <div *ngIf="selectedSubject != null" id="subject" class="dropdown ml-3">
+        <button class="btn btn-outline-secondary dropdown-toggle w-75" type="button" id="subjectDropdown"
+          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {{selectedSubject.description}}
+        </button>
+        <div class="dropdown-menu w-75" aria-labelledby="subjectDropdown">
+          <button *ngFor="let subject of subjects" class="dropdown-item" type="button"
+            (click)="subjectChanged(subject)">{{subject.description}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-4 ml-2">
+    <div class="col-6">
+      <span>Vokabeln aus Priorisierung&nbsp;&nbsp;</span>
+      <input class="prioInputs" type="number" [(ngModel)]="prioFrom" />
+      <span>&nbsp;&nbsp;bis&nbsp;&nbsp;</span>
+      <input class="prioInputs" type="number" [ngModel]="prioTo" /><span>&nbsp;&nbsp;</span>
+    </div>
+    <div class="col-6">
+      <span>Zeit pro Frage:&nbsp;&nbsp;</span>
+      <input class="prioInputs" type="number" [(ngModel)]="timeToAnswerVocabulary" />
+      <span>&nbsp;&nbsp;Sekunden</span>
+    </div>
+  </div>
+  <div class="mt-3 ml-3">
+    <button class="btn btn-outline-success" (click)="startClick()">
+      Starten!
+    </button>
+  </div>
+  <div class="mt-4 alert alert-danger" roler="alert" *ngIf="noVocabularyFound">
+    <span>Keine Vokabeln gefunden!</span>
+  </div>
+  <div *ngIf="vocabularyToAnswer" class="mt-5 card bg-light">
+    <div class="card-header text-center">
+      <ng-container *ngIf="maxTime != null">
+        <div class="progress w-100">
+          <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+            [style.width.%]="progressBarWidth" [class.bg-warning]="progressBarWidth < 50"
+            [class.bg-danger]="progressBarWidth < 25" aria-valuenow="{{timeLeft}}" aria-valuemin="0"
+            aria-valuemax="{{timeToAnswerVocabulary}}"></div>
+        </div>
+        <span class="text-center">{{timeLeft}}</span>
+      </ng-container>
+      <div class="row mt-3">
+        <div class="col-1">
+          <a *ngIf="lastVocabulary.length > 0" (click)="getLastAnsweredVocabulary()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-caret-left"
+              viewBox="0 0 16 16">
+              <path
+                d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+            </svg>
+          </a>
+        </div>
+        <div class="col-10">
+          <span class="h5">{{vocabularyToAnswer.vocabulary}}</span>
+        </div>
+        <div class="col-1">
+          <a (mousedown)="showBlackCarret = true; this.getVocabularyToAnswer(false)"
+            (mouseup)="showBlackCarret = false">
+            <svg *ngIf="!showBlackCarret" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+              class="bi bi-caret-right" viewBox="0 0 16 16">
+              <path
+                d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+            </svg>
+            <svg *ngIf="showBlackCarret" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+              class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+              <path
+                d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div>
+        <div>
+          <input class="form-control" [(ngModel)]="answer" placeholder="Übersetzung..."
+            (keyup.enter)="!answerGiven && checkAnswer()" />
+        </div>
+      </div>
+      <div class="container mt-3">
+        <div class="col-12 text-center">
+          <button class="btn btn-outline-primary" (click)="!answerGiven && checkAnswer()" [disabled]="answerGiven">
+            Antworten
+          </button>
+        </div>
+
+        <div class="mt-4">
+          <div class="alert alert-success" role="alert" *ngIf="vocabularyAnsweredCorrectly">
+            <span>Richtige Antwort!</span>
+          </div>
+          <div class="alert alert-danger" role="alert" *ngIf="vocabularyAnsweredWrong">
+            <span>Antwort falsch! Richtige Antworten</span>
+            <ul>
+              <ng-container *ngFor="let possibleTranslation of vocabularyToAnswer.translations">
+                <li>
+                  {{possibleTranslation.translation}}
+                </li>
+              </ng-container>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

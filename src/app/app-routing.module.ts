@@ -1,8 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { LoginPageComponent } from './login-page/login-page.component';
 import { NavigationComponent } from './nav/nav.component';
 
 const routes: Routes = [
+  {
+    path: 'login',
+    component: LoginPageComponent
+  }
 ];
 
 @NgModule({

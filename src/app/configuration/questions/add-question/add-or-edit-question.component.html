@@ -1,152 +1,235 @@
+<style>
+  .border-between > [class*='col-']:before {
+   background: #e3e3e3;
+   bottom: 0;
+   content: " ";
+   left: 0;
+   position: absolute;
+   width: 1px;
+   top: 0;
+  }
+
+  .answerImage {
+    max-width: 25%;
+    height: auto;
+  }
+  .questionImage {
+    max-width: 50%;
+    height: auto;
+  }
+  .border-between > [class*='col-']:first-child:before {
+    display: none;
+  }
+</style>
 <div class="container-fluid">
   <div class="row">
     <div class="col-6">
-      <h2 class="mt-4 font-weight-light">Frage hinzufügen</h2>
+      <h2 class="page-header">{{title}}</h2>
     </div>
-    <div class="col-6">
-      <button style="width: auto;" type="button" class="mt-4 float-right btn btn-outline-primary"
+    <div class="col-6 text-right">
+      <button type="button" class="btn btn-outline-primary page-header-button"
         (click)="saveQuestion()"
-        [disabled]="selectedSubject == null || selectedSubjectArea == null || answers.length == 0 || answers[0].answer == '' || (selectedQuestionType == 'multipleChoice' && this.multipleChoiceRightAnswer == 0)">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-          class="bi bi-plus-lg text-success" viewBox="0 0 16 16">
-          <path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2H9v6a1 1 0 1 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z" />
-        </svg>
-        &nbsp;Frage speichern
+        [disabled]="selectedSubject == null || selectedSubjectArea == '' || (answers.length == 0 || answers[0].answer == '') || (selectedQuestionType == 'multipleChoice' && this.multipleChoiceRightAnswer == 0)">
+        <i class="bi bi-save text-success" width="16" height="16"></i>
+        <div *ngIf="saveQuestionLoading" class="loader-sm"></div>
+        <span *ngIf="!smallScreen">&nbsp;Frage speichern</span>
+        <span *ngIf="smallScreen">&nbsp;Speichern</span>
       </button>
     </div>
   </div>
   <hr class="my-3">
-  <div *ngIf="subjects != null">
-    <div class="form-group">
-      <label for="subject">Fach</label>
-      <div id="subject" class="dropdown">
-        <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" id="subjectDropdown"
-          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          {{selectedSubject.description}}
-        </button>
-        <div class="dropdown-menu w-100" aria-labelledby="subjectDropdown">
-          <button *ngFor="let subject of subjects" class="dropdown-item" type="button"
-            (click)="subjectChanged(subject)">{{subject.description}}</button>
-        </div>
+  <div class="row border-between" style="height: 83vh;">
+    <div [class.col-12]="!suggestedQuestionsExist || true" [class.col-8]="suggestedQuestionsExist && false">
+      <div *ngIf="questionSaved" class="alert alert-success">
+        <span>Erfolgreich gespeichert!</span>
       </div>
-    </div>
-    <div class="form-group">
-      <label for="subjectArea">Themenbereich</label>
-      <jqxComboBox class="w-100" [(ngModel)]="selectedSubjectArea"
-        #subjectAreaComboBox [height]="38" [source]="subjectAreaForDropdown" [selectedIndex]="0"
-        (onChange)="subjectAreaValueChange($event)">
-      </jqxComboBox>
-    </div>
-    <div class="form-group">
-      <label for="prio" class="form-label">Priorisierung</label>
-      <br>
-      <input type="range" class="form-range w-100" [value]="selectedPrio" min="1" max="10" step="1" id="prio"
-        #prioSlider (change)="prioRangeChanged(prioSlider.value)" />
-      <p class="text-center">{{selectedPrio}}</p>
-    </div>
-    <div class="form-group">
-      <label for="question">Frage</label>
-      <input type="text" class="form-control" id="question" aria-describedby="question" placeholder="Frage..."
-        [(ngModel)]="question" />
-    </div>
-    <div class="form-group">
-      <label for="questionType">Typ</label>
-      <br>
-      <div class="w-100">
-        <ng-container id="questionType" class="form-control btn-group row" role="group" aria-label="QuestionType">
-          <button type="button" class="col-6 form-control btn btn-outline-secondary"
-            [class.active]="selectedQuestionType == 'normal'" (click)="setSelectedType('normal')">
-            Normal
-          </button>
-          <button type="button" class="col-6 form-control btn btn-outline-secondary"
-            [class.active]="selectedQuestionType == 'multipleChoice'" (click)="setSelectedType('multipleChoice')">
-            Multiple Choice
-          </button>
-        </ng-container>
-      </div>
-    </div>
-    <div class="form-group">
-      <div *ngIf="selectedQuestionType == 'normal'">
-        <div class="row">
-          <div class="col-10">
-            <label for="questionAnswers">Antwort/en</label>
-          </div>
-          <div class="col-2">
-            <button style="width: auto;" type="button" class="float-right btn btn-outline-primary"
-              (click)="addAnswer()">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                class="bi bi-plus-lg text-success" viewBox="0 0 16 16">
-                <path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2H9v6a1 1 0 1 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z" />
-              </svg>
-              &nbsp;Antwort hinzufügen
+      <div *ngIf="subjects != null">
+        <div class="form-group">
+          <label for="subject">Fach</label>
+          <div id="subject" class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" id="subjectDropdown"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              {{selectedSubject.description}}
             </button>
+            <div class="dropdown-menu w-100" aria-labelledby="subjectDropdown">
+              <button *ngFor="let subject of subjects" class="dropdown-item" type="button"
+                (click)="subjectChanged(subject)">{{subject.description}}</button>
+            </div>
           </div>
         </div>
-        <ng-container *ngFor="let answer of answers">
-          <div class="row">
-            <div class="col-10">
-              <input type="text" class="form-control mt-3" placeholder="Antwort" [(ngModel)]="answer.answer"/>
-            </div>
-            <div class="col-2">
-              <button style="width: auto;" type="button" class="float-right btn btn-outline-danger mt-3"
-                (click)="removeAnswer(answer)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                  class="bi bi-dash text-danger" viewBox="0 0 16 16">
-                  <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z" />
-                </svg>
-                &nbsp;Antwort entfernen
+        <div class="form-group" *ngIf="suggestedQuestionsExist != null">
+          <label for="subjectArea">Themenbereich</label>
+          <input list="subjectAreas" class="datalist" [(ngModel)]="selectedSubjectArea">
+          <datalist id="subjectAreas">
+            <ng-container *ngFor="let subject of subjectAreaForDropdown">
+              <option value="{{subject}}"></option>
+            </ng-container>
+          </datalist>
+        </div>
+        <div class="form-group">
+          <label for="prio" class="form-label">Priorisierung</label>
+          <br>
+          <input type="range" class="form-range w-100" [value]="selectedPrio" min="1" max="10" step="1" id="prio"
+            #prioSlider (input)="prioRangeChanged(prioSlider.value)" />
+          <p class="text-center">{{selectedPrio}}</p>
+        </div>
+        <div class="form-group">
+          <label for="question">Frage</label>
+          <input type="text" class="form-control" id="question" aria-describedby="question" placeholder="Frage..."
+            [(ngModel)]="question" />
+        </div>
+        <div class="custom-file">
+          <input type="file" class="custom-file-input" id="questionImage" (change)="onQuestionImageChange($event)" accept="*.png.jpg"/>
+          <label *ngIf="questionImage == null" class="custom-file-label" for="questionImage">Bild: Frage</label>
+          <label *ngIf="questionImage != null" class="custom-file-label" for="questionImage">{{questionImage.name}}</label>
+        </div>
+        <div class="mt-3" *ngIf="questionImagePath != null" (click)="onImageClick(questionImagePath)">
+          <img [src]="questionImagePath" class="questionImage"/>
+        </div>
+        <div class="form-group">
+          <label for="questionType">Typ</label>
+          <br>
+          <div class="w-100">
+            <ng-container id="questionType" class="form-control btn-group row" role="group" aria-label="QuestionType">
+              <button type="button" class="col-6 form-control btn btn-outline-secondary"
+                [class.active]="selectedQuestionType == 'normal'" (click)="setSelectedType('normal')">
+                Normal
               </button>
+              <button type="button" class="col-6 form-control btn btn-outline-secondary"
+                [class.active]="selectedQuestionType == 'multipleChoice'" (click)="setSelectedType('multipleChoice')">
+                Multiple Choice
+              </button>
+            </ng-container>
+          </div>
+        </div>
+        <div class="form-group">
+          <div *ngIf="selectedQuestionType == 'normal'">
+            <div class="row">
+              <div class="col-3 col-md-2">
+                <label for="questionAnswers">Antwort/en</label>
+              </div>
+              <div class="col-9 col-md-10 text-right">
+                <button type="button" class="btn btn-outline-primary mr-3"
+                  (click)="addAnswer()">
+                  <i class="bi bi-plus-lg text-success" width="16" height="16"></i>
+                  <span *ngIf="!smallScreen">&nbsp;Antwort hinzufügen</span>
+                </button>
+                <span class="btn btn-outline-primary btn-file">
+                  <i class="bi bi-card-image" width="16" height="16"></i>
+                  <span *ngIf="!smallScreen">&nbsp;Bild hinzufügen <input type="file" (change)="onAnswerImageChange($event)" accept="*.png.jpg" /></span>
+                  <span *ngIf="smallScreen"><input type="file" (change)="onAnswerImageChange($event)" accept="*.png.jpg" /></span>
+                </span>
+              </div>
+            </div>
+            <ng-container *ngFor="let answer of answers">
+              <div *ngIf="answer.answerImage == null || answer.answerImage == ''" class="row mt-3">
+                <div class="col-9">
+                  <input type="text" class="form-control" placeholder="Antwort" [(ngModel)]="answer.answer" />
+                </div>
+                <div class="col-3">
+                  <button type="button" class="btn btn-outline-danger" (click)="removeAnswer(answer)">
+                    <i class="bi bi-dash text-danger" width="16" height="16"></i>
+                    <span *ngIf="!smallScreen">&nbsp;Antwort entfernen</span>
+                  </button>
+                </div>
+              </div>
+              <div class="row mt-3" *ngIf="answer.answerImage != null && answer.answerImage != ''">
+                <div class="col-9">
+                  <div (click)="onImageClick(answer.answerImage)">
+                    <img class="answerImage" [src]="answer.answerImage" />
+                  </div>
+                </div>
+                <div class="col-3">
+                  <button type="button" class="btn btn-outline-danger" (click)="removeAnswerImage(answer)">
+                    <i class="bi bi-dash text-danger" width="16" height="16"></i>
+                    <span *ngIf="!smallScreen">&nbsp;Bild entfernen</span>
+                  </button>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+          <div *ngIf="selectedQuestionType == 'multipleChoice' && answers.length > 0">
+            <label for="multipleChoiceAnswers">Antworten</label>
+            <div class="row">
+              <div class="col-6">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <input type="checkbox" (change)="mulipleChoiceRightAnswerSelected(1)"
+                        [checked]="multipleChoiceRightAnswer == 1" />
+                    </span>
+                  </div>
+                  <input type="text" class="form-control" [(ngModel)]="answers[0].answer" placeholder="Antwort 1" />
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <input type="checkbox" (change)="mulipleChoiceRightAnswerSelected(2)"
+                        [checked]="multipleChoiceRightAnswer == 2" />
+                    </span>
+                  </div>
+                  <input type="text" class="form-control" [(ngModel)]="answers[1].answer" placeholder="Antwort 2" />
+                </div>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-6">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <input type="checkbox" (change)="mulipleChoiceRightAnswerSelected(3)"
+                        [checked]="multipleChoiceRightAnswer == 3" />
+                    </span>
+                  </div>
+                  <input type="text" class="form-control" [(ngModel)]="answers[2].answer" placeholder="Antwort 3" />
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <input type="checkbox" (change)="mulipleChoiceRightAnswerSelected(4)"
+                        [checked]="multipleChoiceRightAnswer == 4" />
+                    </span>
+                  </div>
+                  <input type="text" class="form-control" [(ngModel)]="answers[3].answer" placeholder="Antwort 4" />
+                </div>
+              </div>
             </div>
           </div>
-        </ng-container>
+        </div>
       </div>
-      <div *ngIf="selectedQuestionType == 'multipleChoice'">
-        <label for="multipleChoiceAnswers">Antworten</label>
-        <div class="row">
-          <div class="col-6">
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text">
-                  <input type="checkbox" (change)="mulipleChoiceRightAnswerSelected(1)" [checked]="multipleChoiceRightAnswer == 1"  />
-                </span>
-              </div>
-              <input type="text" class="form-control" [(ngModel)]="answers[0].answer" placeholder="Antwort 1" />
-            </div>
+    </div>
+    <div *ngIf="suggestedQuestionsExist && false" class="col-4">
+      <h4 class="font-weight-light">Vorgeschlagene Fragen</h4>
+      <div *ngFor="let note of notesWithPossibleQuestions">
+        <hr>
+        <div class="row" (click)="expandNote(note.idNote)">
+          <div class="col-10">
+            <span class="h5">Notiz: {{note.noteTitle}}</span>
+            <br>
+            <span class="h6">Themenbereich: {{note.descSubjectArea}}</span>
           </div>
-          <div class="col-6">
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text">
-                  <input type="checkbox" (change)="mulipleChoiceRightAnswerSelected(2)" [checked]="multipleChoiceRightAnswer == 2"  />
-                </span>
-              </div>
-              <input type="text" class="form-control" [(ngModel)]="answers[1].answer" placeholder="Antwort 2" />
-            </div>
+          <div *ngIf="!isNoteOpened(note.idNote)" class="col-2 d-flex justify-content-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
+            </svg>
+          </div>
+          <div *ngIf="isNoteOpened(note.idNote)" class="col-2 d-flex justify-content-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+            </svg>
           </div>
         </div>
-        <div class="row mt-3">
-          <div class="col-6">
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text">
-                  <input type="checkbox" (change)="mulipleChoiceRightAnswerSelected(3)" [checked]="multipleChoiceRightAnswer == 3"  />
-                </span>
-              </div>
-              <input type="text" class="form-control" [(ngModel)]="answers[2].answer" placeholder="Antwort 3" />
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text">
-                  <input type="checkbox" (change)="mulipleChoiceRightAnswerSelected(4)" [checked]="multipleChoiceRightAnswer == 4" />
-                </span>
-              </div>
-              <input type="text" class="form-control" [(ngModel)]="answers[3].answer" placeholder="Antwort 4" />
-            </div>
-          </div>
-        </div>
+        <ul *ngIf="isNoteOpened(note.idNote)" class="list-group">
+          <li *ngFor="let question of note.suggestedQuestions" class="list-group-item" (click)="takeSuggestedQuestion(question, note)">{{question.question}}</li>
+        </ul>
+        <hr>
       </div>
     </div>
   </div>
 </div>
+
+<show-image-in-full-screen #showImageComponent></show-image-in-full-screen>

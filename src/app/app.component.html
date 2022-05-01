@@ -1,2 +1,4 @@
-<navigation></navigation>
+
+<navigation *ngIf="loggedIn && largeScreen"></navigation>
+<small-nav *ngIf="loggedIn && !largeScreen"></small-nav>
 <router-outlet></router-outlet>

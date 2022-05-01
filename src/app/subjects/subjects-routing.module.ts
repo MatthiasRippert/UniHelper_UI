@@ -1,5 +1,6 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
+import { AuthGuard } from "../guards/auth-guard.service";
 import { SubjectBiologyComponent } from "./biology/biology.component";
 import { SubjectBusinessComponent } from "./business/business.component";
 import { SubjectChemistryComponent } from "./chemistry/chemistry.component";
@@ -13,42 +14,48 @@ const routes: Routes = [
     data: {
       title: 'Chemie'
     },
-    component: SubjectChemistryComponent
+    component: SubjectChemistryComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'subject/physics',
     data: {
       title: 'Physik'
     },
-    component: SubjectPhysicsComponent
+    component: SubjectPhysicsComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'subject/biology',
     data: {
       title: 'Chemie'
     },
-    component: SubjectBiologyComponent
+    component: SubjectBiologyComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'subject/business',
     data: {
       title: 'BWL'
     },
-    component: SubjectBusinessComponent
+    component: SubjectBusinessComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'subject/math',
     data: {
       title: 'Mathe'
     },
-    component: SubjectMathComponent
+    component: SubjectMathComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'subject/language',
     data: {
       title: 'Sprache'
     },
-    component: SubjectLanguageComponent
+    component: SubjectLanguageComponent,
+    canActivate: [AuthGuard]
   }
 ];
 
