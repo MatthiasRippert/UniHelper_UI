@@ -4,7 +4,6 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { jqxComboBoxModule } from 'jqwidgets-ng/jqxcombobox';
 import { AuthGuard } from '../guards/auth-guard.service';
 import { CommonRequestService } from '../shared/common-request.service';
 import { AnswerVocabularyRoutingModule } from './answer-vocabulary-routing.module';
@@ -22,8 +21,7 @@ import { AnswerVocabularyService } from './shared/answer-vocabulary.service';
     CommonModule,
     AnswerVocabularyRoutingModule,
     RouterModule,
-    FormsModule,
-    jqxComboBoxModule
+    FormsModule
   ],
   providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},

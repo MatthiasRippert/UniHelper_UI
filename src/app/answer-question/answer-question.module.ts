@@ -5,7 +5,6 @@ import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { jqxComboBoxModule } from 'jqwidgets-ng/jqxcombobox';
 import { AuthGuard } from '../guards/auth-guard.service';
 import { SharedModule } from '../shared/shared.module';
 import { ShowImageInFullScreenComponent } from '../shared/show-image-in-full-screen/show-image-in-full-screen.component';
@@ -27,7 +26,6 @@ import { InputNumberModule } from 'primeng/inputnumber';
     AnswerQuestionRoutingModule,
     RouterModule,
     FormsModule,
-    jqxComboBoxModule,
     AngularFireStorageModule,
     SharedModule,
     MultiSelectModule,

@@ -2,7 +2,6 @@ import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
-import { jqxComboBoxModule } from 'jqwidgets-ng/jqxcombobox';
 import { AnswerVocabularyModule } from "../answer-vocabulary/answer-vocabulary.module";
 import { CommonRequestService } from "../shared/common-request.service";
 import { ConfigurationRoutingModule } from "./configuration-routing.module";
@@ -30,7 +29,6 @@ import { MultiSelectModule } from 'primeng/multiselect';
   imports: [
     ConfigurationRoutingModule,
     CommonModule,
-    jqxComboBoxModule,
     FormsModule,
     RouterModule,
     AnswerVocabularyModule,

@@ -3,7 +3,6 @@ import { Component, EventEmitter, OnInit, ViewChild } from "@angular/core";
 import { AngularFireStorage } from "@angular/fire/compat/storage";
 import { Router } from "@angular/router";
 import { request } from "http";
-import { jqxComboBoxComponent } from "jqwidgets-ng/jqxcombobox";
 import { combineLatest, defer, forkJoin, from, Observable, of, throwError } from "rxjs";
 import { catchError, debounceTime, distinctUntilChanged, filter, map, mergeMap, tap } from "rxjs/operators";
 import { IQuestion, ISubject, ISubjectArea } from "src/app/interfaces/interfaces";
@@ -17,7 +16,6 @@ import { ManageQuestionsService } from "./shared/manage-questions.service";
 })
 
 export class ConfigurationManageQuestionsComponent implements OnInit{
-  @ViewChild('subjectAreaComboBox') subjectAreaComboBox: jqxComboBoxComponent;
   @ViewChild('showImageComponent') showImageComponent: ShowImageInFullScreenComponent;
   selectedSubject: any;
   subjects: ISubject[] = [];

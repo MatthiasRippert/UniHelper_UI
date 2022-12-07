@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { jqxComboBoxComponent } from "jqwidgets-ng/jqxcombobox";
 import { mergeMap } from "rxjs/operators";
 import { CommonRequestService } from "../shared/common-request.service";
 import { NoteService } from "./shared/notes.service";
@@ -11,7 +10,6 @@ import { NoteService } from "./shared/notes.service";
 })
 
 export class NotesComponent implements OnInit{
-  @ViewChild('subjectAreaComboBox') subjectAreaComboBox: jqxComboBoxComponent;
 
   public notes: any[] = [];
   public noteTitle: string;
@@ -84,7 +82,7 @@ export class NotesComponent implements OnInit{
   }
 
   public subjectAreaValueChange(){
-    this.selectedSubjectArea = this.subjectAreaComboBox.getSelectedItem().value;
+    //this.selectedSubjectArea = this.subjectAreaComboBox.getSelectedItem().value;
     this.getNotes();
   }
 

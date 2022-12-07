@@ -3,7 +3,6 @@ import { AngularFireStorage } from "@angular/fire/compat/storage";
 import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { UUID } from "angular2-uuid";
-import { jqxComboBoxComponent } from "jqwidgets-ng/jqxcombobox";
 import { forkJoin, Observable, of } from "rxjs";
 import { ignoreElements, map, mergeMap, tap } from "rxjs/operators";
 import { CommonRequestService } from "src/app/shared/common-request.service";
@@ -18,7 +17,6 @@ import { ConfigurationAddQuestionService } from "./shared/add-or-edit-question.s
 })
 
 export class ConfigurationAddOrEditQuestionComponent implements OnInit{
-  @ViewChild('subjectAreaComboBox') subjectAreaComboBox: jqxComboBoxComponent;
   @ViewChild('showImageComponent') showImageComponent: ShowImageInFullScreenComponent;
 
   title: string = 'Frage hinzufügen';
